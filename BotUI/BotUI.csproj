@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bitfinex.Net.UnitTests\Bitfinex.Net.UnitTests.csproj" />
+    <ProjectReference Include="..\Bitfinex.Net\Bitfinex.Net.csproj" />
+  </ItemGroup>
+
+</Project>

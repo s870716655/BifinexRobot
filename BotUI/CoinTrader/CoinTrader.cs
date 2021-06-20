@@ -8,86 +8,6 @@ using Bitfinex.Net.Objects;
 
 namespace BotUI
 {
-    public struct CoinInfo
-    {
-        // The Coin symbol
-        public string Symbol
-        {
-            get;
-            set;
-        }
-
-        // The best bid price
-        internal decimal Bid
-        {
-            get;
-            set;
-        }
-
-        // The best bid size
-        internal decimal BidSize
-        {
-            get;
-            set;
-        }
-
-        // The best ask price
-        internal decimal Ask
-        {
-            get;
-            set;
-        }
-
-        // The best ask size
-        internal decimal AskSize
-        {
-            get;
-            set;
-        }
-
-        // Change versus 24 hours ago
-        internal decimal DailyChange
-        {
-            get;
-            set;
-        }
-
-        // Change percentage versus 24 hours ago
-        public decimal DailyChangePercentage
-        {
-            get;
-            set;
-        }
-
-        // The last trade price
-        public decimal LastPrice
-        {
-            get;
-            set;
-        }
-
-        // The 24 hour volume
-        public decimal Volume
-        {
-            get;
-            set;
-        }
-
-        // The 24 hour high price
-        public decimal High
-        {
-            get;
-            set;
-        }
-
-        // The 24 hour low price
-        public decimal Low
-        {
-            get;
-            set;
-        }
-    }
-
     // Public members
     internal partial class CoinTrader
     {
@@ -112,7 +32,7 @@ namespace BotUI
             m_szWatchedCoinNameList.Add(szCoinName);
         }
 
-        internal CoinInfo[] CoinInfos
+        internal BitfinexSymbolOverview[] CoinInfos
         {
             get
             {
@@ -132,7 +52,7 @@ namespace BotUI
         static CoinTrader m_Trader;
         BitfinexClient m_Client;
         List<string> m_szWatchedCoinNameList;
-        CoinInfo[] m_CoinInfoArray;
+        BitfinexSymbolOverview[] m_CoinInfoArray;
         System.Windows.Forms.Timer m_RoutineTimer;
 
         // Settings
@@ -155,7 +75,7 @@ namespace BotUI
             // Initailize variables
             m_Client = new BitfinexClient();
             m_szWatchedCoinNameList = new List<string>();
-            m_CoinInfoArray = new CoinInfo[0];
+            m_CoinInfoArray = new BitfinexSymbolOverview[0];
 
             // Initailize timer
             m_RoutineTimer = new System.Windows.Forms.Timer();
@@ -170,13 +90,13 @@ namespace BotUI
             IEnumerable<BitfinexSymbolOverview> AllCoinInfos = m_Client.GetTickerAsync(new CancellationToken(), m_szWatchedCoinNameList.ToArray()).Result.Data;
 
             // Read all datas
-            m_CoinInfoArray = new CoinInfo[AllCoinInfos.Count()];
+            m_CoinInfoArray = new BitfinexSymbolOverview[AllCoinInfos.Count()];
             foreach (var CoinData in AllCoinInfos.Select((value, i) => new { value, i })) {
 
                 int nIndex = CoinData.i;
 
                 // Record data
-                m_CoinInfoArray[nIndex] = new CoinInfo();
+                m_CoinInfoArray[nIndex] = new BitfinexSymbolOverview();
                 m_CoinInfoArray[nIndex].Symbol = CoinData.value.Symbol;
                 m_CoinInfoArray[nIndex].Bid = CoinData.value.Bid;
                 m_CoinInfoArray[nIndex].BidSize = CoinData.value.BidSize;

@@ -39,6 +39,14 @@ namespace BotUI
                 return m_CoinInfoArray;
             }
         }
+
+        internal BitfinexOrder[] ActiveOrders
+        {
+            get
+            {
+                return m_ActiveOrderArray;
+            }
+        }
     }
 
     // Protected members
@@ -53,6 +61,7 @@ namespace BotUI
         BitfinexClient m_Client;
         List<string> m_szWatchedCoinNameList;
         BitfinexSymbolOverview[] m_CoinInfoArray;
+        BitfinexOrder[] m_ActiveOrderArray;
         System.Windows.Forms.Timer m_RoutineTimer;
 
         // Settings
@@ -76,6 +85,7 @@ namespace BotUI
             m_Client = new BitfinexClient();
             m_szWatchedCoinNameList = new List<string>();
             m_CoinInfoArray = new BitfinexSymbolOverview[0];
+            m_ActiveOrderArray = new BitfinexOrder[0];
 
             // Initailize timer
             m_RoutineTimer = new System.Windows.Forms.Timer();
@@ -86,28 +96,20 @@ namespace BotUI
 
         void RoutineTimer_Tick(object sender, EventArgs e)
         {
-            // Ger all informations by client
+            // Read all coin informations
             IEnumerable<BitfinexSymbolOverview> AllCoinInfos = m_Client.GetTickerAsync(new CancellationToken(), m_szWatchedCoinNameList.ToArray()).Result.Data;
-
-            // Read all datas
             m_CoinInfoArray = new BitfinexSymbolOverview[AllCoinInfos.Count()];
             foreach (var CoinData in AllCoinInfos.Select((value, i) => new { value, i })) {
-
-                int nIndex = CoinData.i;
-
                 // Record data
-                m_CoinInfoArray[nIndex] = new BitfinexSymbolOverview();
-                m_CoinInfoArray[nIndex].Symbol = CoinData.value.Symbol;
-                m_CoinInfoArray[nIndex].Bid = CoinData.value.Bid;
-                m_CoinInfoArray[nIndex].BidSize = CoinData.value.BidSize;
-                m_CoinInfoArray[nIndex].Ask = CoinData.value.Ask;
-                m_CoinInfoArray[nIndex].AskSize = CoinData.value.AskSize;
-                m_CoinInfoArray[nIndex].DailyChange = CoinData.value.DailyChange;
-                m_CoinInfoArray[nIndex].DailyChangePercentage = CoinData.value.DailyChangePercentage;
-                m_CoinInfoArray[nIndex].LastPrice = CoinData.value.LastPrice;
-                m_CoinInfoArray[nIndex].Volume = CoinData.value.Volume;
-                m_CoinInfoArray[nIndex].High = CoinData.value.High;
-                m_CoinInfoArray[nIndex].Low = CoinData.value.Low;
+                m_CoinInfoArray[CoinData.i] = CoinData.value;
+            }
+
+            // Read all active orders
+            IEnumerable<BitfinexOrder> AllActiveOrders = m_Client.GetActiveOrdersAsync().Result.Data;
+            m_ActiveOrderArray = new BitfinexOrder[AllActiveOrders.Count()];
+            foreach (var ActiveOrder in AllActiveOrders.Select((value, i) => new { value, i })) {
+                // Record data
+                m_ActiveOrderArray[ActiveOrder.i] = ActiveOrder.value;
             }
         }
     }

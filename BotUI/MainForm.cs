@@ -35,6 +35,7 @@ namespace BotUI
         {
             CoinTrader.Instance.AddWatchedCoin("tBTCUSD");
             CoinTrader.Instance.AddWatchedCoin("tETHUSD");
+            CoinTrader.Instance.AddWatchedCoin("tDOGE:USD");
         }
 
         void InitUI()
@@ -44,7 +45,8 @@ namespace BotUI
 
         void UIUpdateTimer_Tick(object sender, EventArgs e)
         {
-            m_DataGridView.DataSource = CoinTrader.Instance.CoinInfos;
+            m_CoinInfoTable.DataSource = CoinTrader.Instance.CoinInfos;
+            m_ActiveOrderTable.DataSource = CoinTrader.Instance.ActiveOrders;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-namespace BTCTrandBot
+namespace BotUI
 {
     partial class MainForm
     {

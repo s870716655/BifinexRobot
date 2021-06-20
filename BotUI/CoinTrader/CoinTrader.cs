@@ -8,80 +8,80 @@ using Bitfinex.Net.Objects;
 
 namespace BotUI
 {
-    internal struct CoinInfo
+    public struct CoinInfo
     {
         // The Coin symbol
-        internal string Symbol
+        public string Symbol
         {
             get;
             set;
         }
 
         // The best bid price
-        internal decimal Bid
+        public decimal Bid
         {
             get;
             set;
         }
 
         // The best bid size
-        internal decimal BidSize
+        public decimal BidSize
         {
             get;
             set;
         }
 
         // The best ask price
-        internal decimal Ask
+        public decimal Ask
         {
             get;
             set;
         }
 
         // The best ask size
-        internal decimal AskSize
+        public decimal AskSize
         {
             get;
             set;
         }
 
         // Change versus 24 hours ago
-        internal decimal DailyChange
+        public decimal DailyChange
         {
             get;
             set;
         }
 
         // Change percentage versus 24 hours ago
-        internal decimal DailyChangePercentage
+        public decimal DailyChangePercentage
         {
             get;
             set;
         }
 
         // The last trade price
-        internal decimal LastPrice
+        public decimal LastPrice
         {
             get;
             set;
         }
 
         // The 24 hour volume
-        internal decimal Volume
+        public decimal Volume
         {
             get;
             set;
         }
 
         // The 24 hour high price
-        internal decimal High
+        public decimal High
         {
             get;
             set;
         }
 
         // The 24 hour low price
-        internal decimal Low
+        public decimal Low
         {
             get;
             set;

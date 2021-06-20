@@ -8,7 +8,8 @@ namespace BotUI
     {
         internal MainForm()
         {
-            InitializeComponent();
+            // Init UI
+            InitUI();
 
             // Log in
             m_isLoginSuccess = CoinTrader.Instance.UserLog("CHIENLI");
@@ -36,15 +37,14 @@ namespace BotUI
             CoinTrader.Instance.AddWatchedCoin("tETHUSD");
         }
 
+        void InitUI()
+        {
+            InitializeComponent();
+        }
+
         void UIUpdateTimer_Tick(object sender, EventArgs e)
         {
-            CoinInfo[] CoinInfos = CoinTrader.Instance.CoinInfos;
-            if (CoinInfos.Length == 0) {
-                return;
-            }
-
-            // Update price
-            Lab_PriceBTCUSD.Text = CoinInfos[0].LastPrice.ToString("0");
+            m_DataGridView.DataSource = CoinTrader.Instance.CoinInfos;
         }
     }
 }

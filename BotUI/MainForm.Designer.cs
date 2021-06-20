@@ -28,34 +28,34 @@ namespace BotUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.Lab_PriceBTCUSD = new System.Windows.Forms.Label();
+            this.m_DataGridView = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.m_DataGridView)).BeginInit();
             this.SuspendLayout();
             // 
-            // Lab_PriceBTCUSD
+            // m_DataGridView
             // 
-            this.Lab_PriceBTCUSD.BackColor = System.Drawing.Color.White;
-            this.Lab_PriceBTCUSD.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Lab_PriceBTCUSD.ForeColor = System.Drawing.Color.Black;
-            this.Lab_PriceBTCUSD.Location = new System.Drawing.Point(41, 27);
-            this.Lab_PriceBTCUSD.Name = "Lab_PriceBTCUSD";
-            this.Lab_PriceBTCUSD.Size = new System.Drawing.Size(100, 20);
-            this.Lab_PriceBTCUSD.TabIndex = 0;
+            this.m_DataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.m_DataGridView.Location = new System.Drawing.Point(12, 12);
+            this.m_DataGridView.Name = "m_DataGridView";
+            this.m_DataGridView.RowTemplate.Height = 25;
+            this.m_DataGridView.Size = new System.Drawing.Size(776, 426);
+            this.m_DataGridView.TabIndex = 1;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.Lab_PriceBTCUSD);
+            this.Controls.Add(this.m_DataGridView);
             this.Name = "MainForm";
             this.Text = "MainForm";
+            ((System.ComponentModel.ISupportInitialize)(this.m_DataGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label Lab_PriceBTCUSD;
+        private System.Windows.Forms.DataGridView m_DataGridView;
     }
 }
 

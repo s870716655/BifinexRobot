@@ -18,35 +18,35 @@ namespace BotUI
         }
 
         // The best bid price
-        public decimal Bid
+        internal decimal Bid
         {
             get;
             set;
         }
 
         // The best bid size
-        public decimal BidSize
+        internal decimal BidSize
         {
             get;
             set;
         }
 
         // The best ask price
-        public decimal Ask
+        internal decimal Ask
         {
             get;
             set;
         }
 
         // The best ask size
-        public decimal AskSize
+        internal decimal AskSize
         {
             get;
             set;
         }
 
         // Change versus 24 hours ago
-        public decimal DailyChange
+        internal decimal DailyChange
         {
             get;
             set;

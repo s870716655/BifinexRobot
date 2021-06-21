@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiveCharts.WinForms" Version="0.9.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Bitfinex.Net.UnitTests\Bitfinex.Net.UnitTests.csproj" />
     <ProjectReference Include="..\Bitfinex.Net\Bitfinex.Net.csproj" />
   </ItemGroup>

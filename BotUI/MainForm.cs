@@ -33,9 +33,9 @@ namespace BotUI
 
         void InitWatchedCoin()
         {
-            CoinTrader.Instance.AddWatchedCoin("tBTCUSD");
-            CoinTrader.Instance.AddWatchedCoin("tETHUSD");
-            CoinTrader.Instance.AddWatchedCoin("tDOGE:USD");
+            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.BTC_USD);
+            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.ETH_USD);
+            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.DOGE_USD);
         }
 
         void InitUI()

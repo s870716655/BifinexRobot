@@ -58,6 +58,15 @@ namespace BotUI
                 return m_ActiveOrderArray;
             }
         }
+
+        internal BitfinexKline[] GetKlines(CoinTradeType CoinType, TimeFrame TimeUnit, DateTime StartTime, DateTime EndTime, int nCount = 120)
+        {
+            if (m_CoinSymbolDic.ContainsKey(CoinType) == false) {
+                return new BitfinexKline[0];
+            }
+
+            return m_Client.GetKlinesAsync(TimeUnit, m_CoinSymbolDic[CoinType], startTime: StartTime, endTime: EndTime, limit: nCount).Result.Data.ToArray();
+        }
     }
 
     // Protected members
@@ -116,9 +125,6 @@ namespace BotUI
 
             // Read all active orders
             m_ActiveOrderArray = m_Client.GetActiveOrdersAsync().Result.Data.ToArray();
-
-            // Read k line of coin
-            //IEnumerable<BitfinexKline> aaa = m_Client.GetKlinesAsync(TimeFrame.OneDay, "tBTCUSD", startTime: new DateTime(2020, 1, 1), endTime: new DateTime(2020, 12, 13)).Result.Data;
         }
 
         void InitCoinSymbol()

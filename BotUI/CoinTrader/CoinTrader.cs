@@ -32,7 +32,7 @@ namespace BotUI
             m_szWatchedCoinNameList.Add(szCoinName);
         }
 
-        internal BitfinexSymbolOverview[] CoinInfos
+        internal BitfinexSymbolOverview[] WatchedCoinInfos
         {
             get
             {

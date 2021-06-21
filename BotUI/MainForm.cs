@@ -45,7 +45,7 @@ namespace BotUI
 
         void UIUpdateTimer_Tick(object sender, EventArgs e)
         {
-            m_CoinInfoTable.DataSource = CoinTrader.Instance.CoinInfos;
+            m_CoinInfoTable.DataSource = CoinTrader.Instance.WatchedCoinInfos;
             m_ActiveOrderTable.DataSource = CoinTrader.Instance.ActiveOrders;
         }
     }

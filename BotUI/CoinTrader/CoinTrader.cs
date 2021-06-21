@@ -97,20 +97,13 @@ namespace BotUI
         void RoutineTimer_Tick(object sender, EventArgs e)
         {
             // Read all coin informations
-            IEnumerable<BitfinexSymbolOverview> AllCoinInfos = m_Client.GetTickerAsync(new CancellationToken(), m_szWatchedCoinNameList.ToArray()).Result.Data;
-            m_CoinInfoArray = new BitfinexSymbolOverview[AllCoinInfos.Count()];
-            foreach (var CoinData in AllCoinInfos.Select((value, i) => new { value, i })) {
-                // Record data
-                m_CoinInfoArray[CoinData.i] = CoinData.value;
-            }
+            m_CoinInfoArray = m_Client.GetTickerAsync(new CancellationToken(), m_szWatchedCoinNameList.ToArray()).Result.Data.ToArray();
 
             // Read all active orders
-            IEnumerable<BitfinexOrder> AllActiveOrders = m_Client.GetActiveOrdersAsync().Result.Data;
-            m_ActiveOrderArray = new BitfinexOrder[AllActiveOrders.Count()];
-            foreach (var ActiveOrder in AllActiveOrders.Select((value, i) => new { value, i })) {
-                // Record data
-                m_ActiveOrderArray[ActiveOrder.i] = ActiveOrder.value;
-            }
+            m_ActiveOrderArray = m_Client.GetActiveOrdersAsync().Result.Data.ToArray();
+
+            // Read k line of coin
+            //IEnumerable<BitfinexKline> aaa = m_Client.GetKlinesAsync(TimeFrame.OneDay, "tBTCUSD", startTime: new DateTime(2020, 1, 1), endTime: new DateTime(2020, 12, 13)).Result.Data;
         }
     }
 }

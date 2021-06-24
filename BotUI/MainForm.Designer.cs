@@ -37,26 +37,26 @@ namespace BotUI
             // m_CoinInfoTable
             // 
             this.m_CoinInfoTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.m_CoinInfoTable.Location = new System.Drawing.Point(12, 12);
+            this.m_CoinInfoTable.Location = new System.Drawing.Point(10, 10);
             this.m_CoinInfoTable.Name = "m_CoinInfoTable";
             this.m_CoinInfoTable.RowTemplate.Height = 25;
-            this.m_CoinInfoTable.Size = new System.Drawing.Size(776, 171);
+            this.m_CoinInfoTable.Size = new System.Drawing.Size(770, 200);
             this.m_CoinInfoTable.TabIndex = 1;
             // 
             // m_ActiveOrderTable
             // 
             this.m_ActiveOrderTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.m_ActiveOrderTable.Location = new System.Drawing.Point(12, 201);
+            this.m_ActiveOrderTable.Location = new System.Drawing.Point(10, 220);
             this.m_ActiveOrderTable.Name = "m_ActiveOrderTable";
             this.m_ActiveOrderTable.RowTemplate.Height = 25;
-            this.m_ActiveOrderTable.Size = new System.Drawing.Size(776, 187);
+            this.m_ActiveOrderTable.Size = new System.Drawing.Size(770, 200);
             this.m_ActiveOrderTable.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 1500);
             this.Controls.Add(this.m_ActiveOrderTable);
             this.Controls.Add(this.m_CoinInfoTable);
             this.Name = "MainForm";
@@ -65,11 +65,19 @@ namespace BotUI
             ((System.ComponentModel.ISupportInitialize)(this.m_ActiveOrderTable)).EndInit();
             this.ResumeLayout(false);
 
+            //
+            // ZoomChart
+            //
+            m_ZoomChart = new ZoomChart();
+            m_ZoomChart.Location = new System.Drawing.Point(10, 430);
+            m_ZoomChart.Size = new System.Drawing.Size(770, 350);
+            this.Controls.Add(m_ZoomChart);
         }
 
         #endregion
         private System.Windows.Forms.DataGridView m_CoinInfoTable;
         private System.Windows.Forms.DataGridView m_ActiveOrderTable;
+        private ZoomChart m_ZoomChart;
     }
 }
 

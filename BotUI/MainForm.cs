@@ -28,9 +28,7 @@ namespace BotUI
 
             // Get BTCUSD price
             PriceData[] BTCUSDPriceArray = CoinTrader.Instance.GetClosePrices(CoinTradeType.BTC_USD, DateTime.Today.AddYears(-1), DateTime.Today.AddDays(-1), 300);
-            for (int i = 0; i < BTCUSDPriceArray.Length; i++) {
-                m_ZoomChart.AddData(BTCUSDPriceArray[i].Timestamp, Convert.ToDouble(BTCUSDPriceArray[i].Price));
-            }
+            m_ZoomChart.AddPriceDatas(BTCUSDPriceArray, System.Windows.Media.Colors.Red);
         }
 
         // Private members

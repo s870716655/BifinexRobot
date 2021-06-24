@@ -15,6 +15,34 @@ namespace BotUI
         DOGE_USD = 2,
     }
 
+    internal struct PriceData
+    {
+        DateTime m_Timestamp;
+        decimal m_Price;
+
+        internal PriceData(DateTime Timestamp, decimal Price)
+        {
+            m_Timestamp = Timestamp;
+            m_Price = Price;
+        }
+
+        internal DateTime Timestamp
+        {
+            get
+            {
+                return m_Timestamp;
+            }
+        }
+
+        internal decimal Price
+        {
+            get
+            {
+                return m_Price;
+            }
+        }
+    }
+
     // Public members
     internal partial class CoinTrader
     {
@@ -66,6 +94,20 @@ namespace BotUI
             }
 
             return m_Client.GetKlinesAsync(TimeUnit, m_CoinSymbolDic[CoinType], startTime: StartTime, endTime: EndTime, limit: nCount).Result.Data.ToArray();
+        }
+
+        internal PriceData[] GetClosePrices(CoinTradeType CoinType, DateTime StartTime, DateTime EndTime, int nCount = 120)
+        {
+            if (m_CoinSymbolDic.ContainsKey(CoinType) == false) {
+                return new PriceData[0];
+            }
+
+            BitfinexKline[] CoinKlines = m_Client.GetKlinesAsync(TimeFrame.OneDay, m_CoinSymbolDic[CoinType], startTime: StartTime, endTime: EndTime, limit: nCount).Result.Data.ToArray();
+            PriceData[] PriceDataArray = new PriceData[CoinKlines.Length];
+            for (int i = 0; i < PriceDataArray.Length; i++) {
+                PriceDataArray[i] = new PriceData(CoinKlines[i].Timestamp, CoinKlines[i].Close);
+            }
+            return PriceDataArray;
         }
     }
 

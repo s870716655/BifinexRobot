@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Bitfinex.Net.Objects;
-
 namespace BotUI
 {
     // Public members
@@ -28,9 +26,10 @@ namespace BotUI
             m_UIUpdateTimer.Tick += UIUpdateTimer_Tick;
             m_UIUpdateTimer.Enabled = true;
 
-            BitfinexKline[] CoinKlines = CoinTrader.Instance.GetKlines(CoinTradeType.BTC_USD, TimeFrame.OneDay, DateTime.Today.AddYears(-1), DateTime.Today.AddDays(-1), 300);
-            for (int i = 0; i < CoinKlines.Length; i++) {
-                m_ZoomChart.AddData(CoinKlines[i].Timestamp, Convert.ToDouble(CoinKlines[i].Close));
+            // Get BTCUSD price
+            PriceData[] BTCUSDPriceArray = CoinTrader.Instance.GetClosePrices(CoinTradeType.BTC_USD, DateTime.Today.AddYears(-1), DateTime.Today.AddDays(-1), 300);
+            for (int i = 0; i < BTCUSDPriceArray.Length; i++) {
+                m_ZoomChart.AddData(BTCUSDPriceArray[i].Timestamp, Convert.ToDouble(BTCUSDPriceArray[i].Price));
             }
         }
 

@@ -102,7 +102,7 @@ namespace BotUI
                 return new PriceData[0];
             }
 
-            BitfinexKline[] CoinKlines = m_Client.GetKlinesAsync(TimeFrame.OneDay, m_CoinSymbolDic[CoinType], startTime: StartTime, endTime: EndTime, limit: nCount).Result.Data.ToArray();
+            BitfinexKline[] CoinKlines = m_Client.GetKlinesAsync(TimeFrame.OneDay, m_CoinSymbolDic[CoinType], startTime: StartTime, endTime: EndTime, limit: nCount, sorting: Sorting.OldFirst).Result.Data.ToArray();
             PriceData[] PriceDataArray = new PriceData[CoinKlines.Length];
             for (int i = 0; i < PriceDataArray.Length; i++) {
                 PriceDataArray[i] = new PriceData(CoinKlines[i].Timestamp, CoinKlines[i].Close);

@@ -43,18 +43,13 @@ namespace BotUI
         {
             m_Data = new ChartValues<DateTimePoint>();
 
-            System.Windows.Media.LinearGradientBrush GradientBrush = new System.Windows.Media.LinearGradientBrush();
-            GradientBrush.StartPoint = new System.Windows.Point(0, 0);
-            GradientBrush.EndPoint = new System.Windows.Point(0, 1);
-            GradientBrush.GradientStops.Add(new GradientStop(System.Windows.Media.Color.FromRgb(33, 148, 241), 0));
-            GradientBrush.GradientStops.Add(new GradientStop(System.Windows.Media.Colors.Transparent, 1));
-
             LineSeries DataSeries = new LineSeries();
             DataSeries.Values = m_Data;
-            DataSeries.Fill = GradientBrush;
+            DataSeries.LineSmoothness = 0;
+            DataSeries.Fill = System.Windows.Media.Brushes.Transparent;
             DataSeries.StrokeThickness = 1;
             DataSeries.PointGeometrySize = 0;
-
+            DataSeries.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red);
             Series.Add(DataSeries);
         }
 

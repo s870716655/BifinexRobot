@@ -44,7 +44,7 @@ namespace BotUI
             RefreshAllDataAnalyzer();
 
             // Draw BTCUSD prices
-            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+            DreaAllChart();
 
             // Subscribe event
             m_TimeUnitComboBox.SelectedIndexChanged += TimeUnitComboBox_SelectedIndexChanged;
@@ -70,7 +70,7 @@ namespace BotUI
             RefreshAllDataAnalyzer();
 
             // Draw chart
-            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+            DreaAllChart();
         }
 
         void TimeUnitComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace BotUI
 
             // If time unit equal to one hour, only show 2 days data
             if (m_PriceDataInfo.TimeUnit == TimeFrame.OneHour) {
-                m_PriceDataInfo.EndTime = DateTime.Now.AddHours(-2);
+                m_PriceDataInfo.EndTime = DateTime.Now.AddHours(-3);
                 m_PriceDataInfo.StartTime = m_PriceDataInfo.EndTime.AddDays(-2);
 
                 // Update UI
@@ -91,16 +91,23 @@ namespace BotUI
             RefreshAllDataAnalyzer();
 
             // Draw chart
-            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+            DreaAllChart();
         }
 
-        void DrawPriceChart(ZoomChart Chart, CoinTradeType CoinType)
+        void DreaAllChart()
+        {
+            DrawPriceChart(m_LabChartName1, m_ZoomChart1, CoinTradeType.BTC_USD);
+            DrawPriceChart(m_LabChartName2, m_ZoomChart2, CoinTradeType.ETH_USD);
+        }
+
+        void DrawPriceChart(Label ChartLab, ZoomChart Chart, CoinTradeType CoinType)
         {
             Chart.ClearPriceDatas();
             Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].PriceData, System.Windows.Media.Colors.Black);
             Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].MA, System.Windows.Media.Colors.Blue);
             Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].BBands_Upper, System.Windows.Media.Colors.Green);
             Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].BBands_Lower, System.Windows.Media.Colors.Red);
+            ChartLab.Text = CoinType.ToString();
         }
 
         // Private members
@@ -112,7 +119,7 @@ namespace BotUI
 
         struct PriceDataInfo
         {
-           internal TimeFrame TimeUnit
+            internal TimeFrame TimeUnit
             {
                 get;
                 set;

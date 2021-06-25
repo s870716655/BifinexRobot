@@ -56,7 +56,7 @@ namespace BotUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 1500);
+            this.ClientSize = new System.Drawing.Size(1200, 1500);
             this.Controls.Add(this.m_ActiveOrderTable);
             this.Controls.Add(this.m_CoinInfoTable);
             this.Name = "MainForm";

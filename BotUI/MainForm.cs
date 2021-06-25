@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+
+using Bitfinex.Net.Objects;
 
 namespace BotUI
 {
@@ -17,66 +20,137 @@ namespace BotUI
                 MessageBox.Show("Log in failed");
             }
 
-            // Initailize watched coin 
-            InitWatchedCoin();
-
             // Initailize timer
             m_UIUpdateTimer = new System.Windows.Forms.Timer();
             m_UIUpdateTimer.Interval = 500;
             m_UIUpdateTimer.Tick += UIUpdateTimer_Tick;
             m_UIUpdateTimer.Enabled = true;
 
-            // Get BTCUSD price
-            PriceData[] BTCUSDPriceDataArray = CoinTrader.Instance.GetClosePrices(CoinTradeType.BTC_USD, DateTime.Today.AddYears(-1), DateTime.Today.AddDays(-1), 365);
-            m_ZoomChart.AddPriceDatas(BTCUSDPriceDataArray, System.Windows.Media.Colors.Black);
+            // Add coin to wated list
+            AddWatchedCoin(CoinTradeType.BTC_USD);
+            AddWatchedCoin(CoinTradeType.ETH_USD);
+            AddWatchedCoin(CoinTradeType.DOGE_USD);
 
-            // Get BTCUSD price in 20MA
-            PriceData[] BTCUSD20MAPriceDataArray = GetMAPrice(BTCUSDPriceDataArray, 20);
-            m_ZoomChart.AddPriceDatas(BTCUSD20MAPriceDataArray, System.Windows.Media.Colors.Blue);
+            // Initailize coin watching function
+            InitCoinWatchFunc();
 
-            // Get bollinger bands of BTCUSD price in 20MA
-            BBandsData BBandsData_20MA = GetBBandsData(BTCUSDPriceDataArray, 20, 2);
-            m_ZoomChart.AddPriceDatas(BBandsData_20MA.UpperPriceData, System.Windows.Media.Colors.Green);
-            m_ZoomChart.AddPriceDatas(BBandsData_20MA.LowerPriceData, System.Windows.Media.Colors.Red);
+            // Initailize the time setting of price data
+            m_PriceDataInfo = new PriceDataInfo();
+            m_PriceDataInfo.EndTime = DateTime.Today.AddDays(-1);
+            m_PriceDataInfo.StartTime = m_PriceDataInfo.EndTime.AddMonths(-3);
+            m_PriceDataInfo.TimeUnit = TimeFrame.OneDay;
+
+            // Get all coins analize result
+            RefreshAllDataAnalyzer();
+
+           // Draw BTCUSD prices
+            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].PriceData, System.Windows.Media.Colors.Black);
+            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].MA, System.Windows.Media.Colors.Blue);
+            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].BBands_Upper, System.Windows.Media.Colors.Green);
+            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].BBands_Lower, System.Windows.Media.Colors.Red);
         }
 
         // Private members
         bool m_isLoginSuccess = false;
         System.Windows.Forms.Timer m_UIUpdateTimer;
+        Dictionary<CoinTradeType, DataAnalyzer> m_CointPriceAnalyzerDic;
+        List<CoinTradeType> m_CoinList;
+        PriceDataInfo m_PriceDataInfo;
 
-        struct BBandsData
+        struct PriceDataInfo
         {
-            PriceData[] m_UpperPriceData;
-            PriceData[] m_LowerPriceData;
-
-            internal BBandsData(PriceData[] UpperPriceData, PriceData[] LowerPriceData)
+           internal TimeFrame TimeUnit
             {
-                m_UpperPriceData = UpperPriceData;
-                m_LowerPriceData = LowerPriceData;
+                get;
+                set;
             }
 
-            internal PriceData[] UpperPriceData
+            internal DateTime StartTime
+            {
+                get;
+                set;
+            }
+
+            internal DateTime EndTime
+            {
+                get;
+                set;
+            }
+
+            internal int DataCount
             {
                 get
                 {
-                    return m_UpperPriceData;
+                    if (StartTime == null || EndTime == null) {
+                        return 0;
+                    }
+
+                    return CalTimeFrameCount(EndTime - StartTime, TimeUnit);
                 }
             }
 
-            internal PriceData[] LowerPriceData
+            int CalTimeFrameCount(TimeSpan TimeDiffInput, TimeFrame TimeUnit)
             {
-                get
-                {
-                    return m_LowerPriceData;
+                TimeSpan TimeDiff = TimeDiffInput.Add(TimeSpan.FromDays(1));
+                int nCount;
+                switch (TimeUnit) {
+                    case TimeFrame.OneMonth:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalDays / 30));
+                        break;
+                    case TimeFrame.SevenDay:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalDays / 7));
+                        break;
+                    case TimeFrame.OneDay:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalDays));
+                        break;
+                    case TimeFrame.OneHour:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalHours));
+                        break;
+                    case TimeFrame.FiveMinute:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalMinutes) / 5);
+                        break;
+                    case TimeFrame.OneMinute:
+                    default:
+                        nCount = (int)(Math.Ceiling(TimeDiff.TotalMinutes));
+                        break;
                 }
+
+                return nCount;
             }
         }
 
-        void InitWatchedCoin()
+        void AddWatchedCoin(CoinTradeType CoinType)
         {
-            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.BTC_USD);
-            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.ETH_USD);
-            CoinTrader.Instance.AddWatchedCoin(CoinTradeType.DOGE_USD);
+            // Initailize history data analizer
+            if (m_CoinList == null) {
+                m_CoinList = new List<CoinTradeType>();
+            }
+            m_CoinList.Add(CoinType);
+        }
+
+        void InitCoinWatchFunc()
+        {
+            for (int i = 0; i < m_CoinList.Count; i++) {
+                // Initailize real-time watcher
+                CoinTrader.Instance.AddWatchedCoin(m_CoinList[i]);
+
+                // Initailize history data analizer
+                if (m_CointPriceAnalyzerDic == null) {
+                    m_CointPriceAnalyzerDic = new Dictionary<CoinTradeType, DataAnalyzer>();
+                }
+                m_CointPriceAnalyzerDic.Add(m_CoinList[i], new DataAnalyzer());
+            }
+        }
+
+        void RefreshAllDataAnalyzer()
+        {
+            for (int i = 0; i < m_CoinList.Count; i++) {
+                if (m_CointPriceAnalyzerDic.ContainsKey(m_CoinList[i]) == false) {
+                    continue;
+                }
+
+                m_CointPriceAnalyzerDic[m_CoinList[i]].PriceData = CoinTrader.Instance.GetClosePrices(m_CoinList[i], m_PriceDataInfo.StartTime, m_PriceDataInfo.EndTime, m_PriceDataInfo.DataCount);
+            }
         }
 
         void InitUI()
@@ -88,53 +162,6 @@ namespace BotUI
         {
             m_CoinInfoTable.DataSource = CoinTrader.Instance.WatchedCoinInfos;
             m_ActiveOrderTable.DataSource = CoinTrader.Instance.ActiveOrders;
-        }
-
-        PriceData[] GetMAPrice(PriceData[] PriceDataArray, int nAveCount)
-        {
-            // Get current price array
-            decimal[] PriceArray = new decimal[PriceDataArray.Length];
-            for (int i = 0; i < PriceArray.Length; i++) {
-                PriceArray[i] = PriceDataArray[i].Price;
-            }
-
-            // Calculate MA price array
-            decimal[] MAPriceArray = Utility.Instance.GetMovingAverage(PriceArray, nAveCount);
-
-            // Construct PriceData array
-            PriceData[] MAPriceDataArray = new PriceData[MAPriceArray.Length];
-            for (int i = 0; i < MAPriceDataArray.Length; i++) {
-               MAPriceDataArray[i] = new PriceData(PriceDataArray[i].Timestamp, MAPriceArray[i]);
-            }
-
-            return MAPriceDataArray;
-        }
-
-        BBandsData GetBBandsData(PriceData[] PriceDataArray, int nAveCount, int nStdDevNum)
-        {
-            // Get MA PriceData array
-            PriceData[] MAPriceDataArray = GetMAPrice(PriceDataArray, nAveCount);
-
-            // Get standard deviation price array
-            decimal[] BufferArray = new decimal[nAveCount];
-            decimal[] StdDevPriceArray = new decimal[PriceDataArray.Length];
-            
-            int nCurrentIndex = 0;
-            for (int i = 0; i < StdDevPriceArray.Length; i++) {
-                BufferArray[nCurrentIndex] = PriceDataArray[i].Price;
-                StdDevPriceArray[i] = Utility.Instance.GetStandardDeviation(BufferArray);
-                nCurrentIndex = (nCurrentIndex + 1) % nAveCount;
-            }
-
-            // Calculate bollinger bands
-            PriceData[] UpperPriceDataArray = new PriceData[StdDevPriceArray.Length];
-            PriceData[] LowerPriceDataArray = new PriceData[StdDevPriceArray.Length];
-            for (int i = 0; i < UpperPriceDataArray.Length; i++) {
-                UpperPriceDataArray[i] = new PriceData(PriceDataArray[i].Timestamp, MAPriceDataArray[i].Price + StdDevPriceArray[i] * nStdDevNum);
-                LowerPriceDataArray[i] = new PriceData(PriceDataArray[i].Timestamp, MAPriceDataArray[i].Price - StdDevPriceArray[i] * nStdDevNum);
-            }
-
-            return new BBandsData(UpperPriceDataArray, LowerPriceDataArray);
         }
     }
 }

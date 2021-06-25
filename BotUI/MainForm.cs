@@ -43,11 +43,64 @@ namespace BotUI
             // Get all coins analize result
             RefreshAllDataAnalyzer();
 
-           // Draw BTCUSD prices
-            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].PriceData, System.Windows.Media.Colors.Black);
-            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].MA, System.Windows.Media.Colors.Blue);
-            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].BBands_Upper, System.Windows.Media.Colors.Green);
-            m_ZoomChart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinTradeType.BTC_USD].BBands_Lower, System.Windows.Media.Colors.Red);
+            // Draw BTCUSD prices
+            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+
+            // Subscribe event
+            m_TimeUnitComboBox.SelectedIndexChanged += TimeUnitComboBox_SelectedIndexChanged;
+            m_StartTimePicker.CloseUp += TimePicker_CloseUp;
+            m_EndTimePicker.CloseUp += TimePicker_CloseUp;
+
+            // Update UI
+            UpdateTimePicker();
+        }
+
+        private void TimePicker_CloseUp(object sender, EventArgs e)
+        {
+            // Value check
+            if (m_StartTimePicker.Value >= m_EndTimePicker.Value) {
+                m_StartTimePicker.Value = m_EndTimePicker.Value.AddDays(-1);
+            }
+
+            // Change start and end time
+            m_PriceDataInfo.StartTime = m_StartTimePicker.Value;
+            m_PriceDataInfo.EndTime = m_EndTimePicker.Value;
+
+            // Refresh datas
+            RefreshAllDataAnalyzer();
+
+            // Draw chart
+            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+        }
+
+        void TimeUnitComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Change time unit
+            m_PriceDataInfo.TimeUnit = (TimeFrame)Enum.Parse(typeof(TimeFrame), m_TimeUnitComboBox.SelectedItem.ToString());
+
+            // If time unit equal to one hour, only show 2 days data
+            if (m_PriceDataInfo.TimeUnit == TimeFrame.OneHour) {
+                m_PriceDataInfo.EndTime = DateTime.Now.AddHours(-2);
+                m_PriceDataInfo.StartTime = m_PriceDataInfo.EndTime.AddDays(-2);
+
+                // Update UI
+                UpdateTimePicker();
+            }
+
+            // Refresh datas
+            RefreshAllDataAnalyzer();
+
+            // Draw chart
+            DrawPriceChart(m_ZoomChart, CoinTradeType.BTC_USD);
+        }
+
+        void DrawPriceChart(ZoomChart Chart, CoinTradeType CoinType)
+        {
+            Chart.ClearPriceDatas();
+            Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].PriceData, System.Windows.Media.Colors.Black);
+            Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].MA, System.Windows.Media.Colors.Blue);
+            Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].BBands_Upper, System.Windows.Media.Colors.Green);
+            Chart.AddPriceDatas(m_CointPriceAnalyzerDic[CoinType].BBands_Lower, System.Windows.Media.Colors.Red);
         }
 
         // Private members
@@ -115,6 +168,11 @@ namespace BotUI
                         break;
                 }
 
+                // Bifinex API spec
+                if (nCount > 5000) {
+                    nCount = 5000;
+                }
+
                 return nCount;
             }
         }
@@ -149,19 +207,32 @@ namespace BotUI
                     continue;
                 }
 
-                m_CointPriceAnalyzerDic[m_CoinList[i]].PriceData = CoinTrader.Instance.GetClosePrices(m_CoinList[i], m_PriceDataInfo.StartTime, m_PriceDataInfo.EndTime, m_PriceDataInfo.DataCount);
+                m_CointPriceAnalyzerDic[m_CoinList[i]].PriceData = CoinTrader.Instance.GetClosePrices(m_CoinList[i], m_PriceDataInfo.TimeUnit, m_PriceDataInfo.StartTime, m_PriceDataInfo.EndTime, m_PriceDataInfo.DataCount);
             }
         }
 
         void InitUI()
         {
             InitializeComponent();
+
+            // Init time unit select box
+            m_TimeUnitComboBox.Items.Add(TimeFrame.OneMonth.ToString());
+            m_TimeUnitComboBox.Items.Add(TimeFrame.SevenDay.ToString());
+            m_TimeUnitComboBox.Items.Add(TimeFrame.OneDay.ToString());
+            m_TimeUnitComboBox.Items.Add(TimeFrame.OneHour.ToString());
         }
 
         void UIUpdateTimer_Tick(object sender, EventArgs e)
         {
             m_CoinInfoTable.DataSource = CoinTrader.Instance.WatchedCoinInfos;
             m_ActiveOrderTable.DataSource = CoinTrader.Instance.ActiveOrders;
+        }
+
+        void UpdateTimePicker()
+        {
+            m_TimeUnitComboBox.SelectedItem = m_PriceDataInfo.TimeUnit.ToString();
+            m_StartTimePicker.Value = m_PriceDataInfo.StartTime;
+            m_EndTimePicker.Value = m_PriceDataInfo.EndTime;
         }
     }
 }

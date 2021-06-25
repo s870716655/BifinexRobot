@@ -39,6 +39,11 @@ namespace BotUI
 
             Series.Add(DataSeries);
         }
+
+        internal void ClearPriceDatas()
+        {
+            Series.Clear();
+        }
     }
 
     // Protected members
@@ -53,7 +58,7 @@ namespace BotUI
         {
             // Set axis
             Axis Axis_X = new Axis();
-            Axis_X.LabelFormatter = val => new System.DateTime((long)val).ToString("dd MM yyyy");
+            Axis_X.LabelFormatter = val => new System.DateTime((long)val).ToString("yyyy/MM/dd/HH ");
             Axis Axis_Y = new Axis();
             Axis_Y.LabelFormatter = val => val.ToString("0");
             AxisX.Add(Axis_X);

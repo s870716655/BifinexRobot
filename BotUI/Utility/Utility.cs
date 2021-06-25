@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace BotUI
@@ -24,6 +25,15 @@ namespace BotUI
             }
 
             return MovingAverage(DataArray, nAveCount);
+        }
+
+        internal decimal GetStandardDeviation(decimal[] DataArray)
+        {
+            if (DataArray.Length == 0) {
+                return 0.0M;
+            }
+
+            return StandardDeviation(DataArray);
         }
     }
 
@@ -55,6 +65,28 @@ namespace BotUI
             }
 
             return OutputArray;
+        }
+
+        decimal GetAverage(decimal[] DataArray)
+        {
+            decimal Sum = 0.0M;
+            for (int i = 0; i < DataArray.Length; i++) {
+                Sum += DataArray[i];
+            }
+
+            return Sum / DataArray.Length;
+        }
+
+        decimal StandardDeviation(decimal[] DataArray)
+        {
+            decimal Average = GetAverage(DataArray);
+
+            decimal Sum = 0.0M;
+            for (int i = 0; i < DataArray.Length; i++) {
+                Sum += ((DataArray[i] - Average) * (DataArray[i] - Average));
+            }
+
+            return Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(Sum / DataArray.Length)));
         }
     }
 }

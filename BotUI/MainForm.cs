@@ -32,20 +32,45 @@ namespace BotUI
 
             // Get BTCUSD price in 20MA
             PriceData[] BTCUSD20MAPriceDataArray = GetMAPrice(BTCUSDPriceDataArray, 20);
-            m_ZoomChart.AddPriceDatas(BTCUSD20MAPriceDataArray, System.Windows.Media.Colors.Red);
+            m_ZoomChart.AddPriceDatas(BTCUSD20MAPriceDataArray, System.Windows.Media.Colors.Blue);
 
-            // Get BTCUSD price in 10MA
-            PriceData[] BTCUSD10MAPriceDataArray = GetMAPrice(BTCUSDPriceDataArray, 10);
-            m_ZoomChart.AddPriceDatas(BTCUSD10MAPriceDataArray, System.Windows.Media.Colors.DarkOrange);
-
-            // Get BTCUSD price in 5MA
-            PriceData[] BTCUSD5MAPriceDataArray = GetMAPrice(BTCUSDPriceDataArray, 5);
-            m_ZoomChart.AddPriceDatas(BTCUSD5MAPriceDataArray, System.Windows.Media.Colors.Blue);
+            // Get bollinger bands of BTCUSD price in 20MA
+            BBandsData BBandsData_20MA = GetBBandsData(BTCUSDPriceDataArray, 20, 2);
+            m_ZoomChart.AddPriceDatas(BBandsData_20MA.UpperPriceData, System.Windows.Media.Colors.Green);
+            m_ZoomChart.AddPriceDatas(BBandsData_20MA.LowerPriceData, System.Windows.Media.Colors.Red);
         }
 
         // Private members
         bool m_isLoginSuccess = false;
         System.Windows.Forms.Timer m_UIUpdateTimer;
+
+        struct BBandsData
+        {
+            PriceData[] m_UpperPriceData;
+            PriceData[] m_LowerPriceData;
+
+            internal BBandsData(PriceData[] UpperPriceData, PriceData[] LowerPriceData)
+            {
+                m_UpperPriceData = UpperPriceData;
+                m_LowerPriceData = LowerPriceData;
+            }
+
+            internal PriceData[] UpperPriceData
+            {
+                get
+                {
+                    return m_UpperPriceData;
+                }
+            }
+
+            internal PriceData[] LowerPriceData
+            {
+                get
+                {
+                    return m_LowerPriceData;
+                }
+            }
+        }
 
         void InitWatchedCoin()
         {
@@ -83,6 +108,33 @@ namespace BotUI
             }
 
             return MAPriceDataArray;
+        }
+
+        BBandsData GetBBandsData(PriceData[] PriceDataArray, int nAveCount, int nStdDevNum)
+        {
+            // Get MA PriceData array
+            PriceData[] MAPriceDataArray = GetMAPrice(PriceDataArray, nAveCount);
+
+            // Get standard deviation price array
+            decimal[] BufferArray = new decimal[nAveCount];
+            decimal[] StdDevPriceArray = new decimal[PriceDataArray.Length];
+            
+            int nCurrentIndex = 0;
+            for (int i = 0; i < StdDevPriceArray.Length; i++) {
+                BufferArray[nCurrentIndex] = PriceDataArray[i].Price;
+                StdDevPriceArray[i] = Utility.Instance.GetStandardDeviation(BufferArray);
+                nCurrentIndex = (nCurrentIndex + 1) % nAveCount;
+            }
+
+            // Calculate bollinger bands
+            PriceData[] UpperPriceDataArray = new PriceData[StdDevPriceArray.Length];
+            PriceData[] LowerPriceDataArray = new PriceData[StdDevPriceArray.Length];
+            for (int i = 0; i < UpperPriceDataArray.Length; i++) {
+                UpperPriceDataArray[i] = new PriceData(PriceDataArray[i].Timestamp, MAPriceDataArray[i].Price + StdDevPriceArray[i] * nStdDevNum);
+                LowerPriceDataArray[i] = new PriceData(PriceDataArray[i].Timestamp, MAPriceDataArray[i].Price - StdDevPriceArray[i] * nStdDevNum);
+            }
+
+            return new BBandsData(UpperPriceDataArray, LowerPriceDataArray);
         }
     }
 }
